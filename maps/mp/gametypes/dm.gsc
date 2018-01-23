@@ -73,8 +73,8 @@ intoSpawn(originA, anglesA)
 	self freezeControls( false );
 	if (roundspl==0)
 	{
-		//self iPrintlnbold("^2Have Fun");
-		//self playLocalSound("welcome");
+		self iPrintlnbold("^2Have Fun");
+		self playLocalSound("welcome");
 	}
 }
 
