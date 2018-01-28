@@ -2297,6 +2297,90 @@ Callback_PlayerDamage(eInflictor,eAttacker,iDamage,iDFlags,sMeansOfDeath,sWeapon
 		logPrint("D;"+self getGuid()+";"+self getEntityNumber()+";"+self.pers["team"]+";"+self.name+";"+lpattackGuid+";"+lpattacknum+";"+lpattackerteam+";"+lpattackname+";"+sWeapon+";"+iDamage+";"+sMeansOfDeath+";"+sHitLoc+"\n");
 	}
 	self promod\shoutcast::updatePlayer();
+		self thread Camp_Watcher();
+}
+
+Camp_Watcher()
+{
+	//level waittill( "prematch_over" );
+	self endon( "death" );
+	self endon("disconnect");
+	self endon("joined_spectators");
+	self endon("game_ended");
+	my_camp_time = 0;
+	have_i_been_warned = false;
+	max_distance = 240;
+	camp_time = 20;
+	camp_time_sniper = 40;
+	currentweapon = self GetCurrentWeapon();
+
+	while( 1 )
+	{
+		old_position = self.origin;
+		wait 1;
+	
+		new_position = self.origin;
+		distance = distance2d( old_position, new_position );
+	
+		if( currentweapon == "m21_mp" || currentweapon == "barrett_mp" || currentweapon == "dragunov_mp" || currentweapon == "m40a3_mp" || currentweapon == "remington700_mp" )
+		{	
+			if( distance < max_distance )
+				my_camp_time++;
+			else
+			{
+				my_camp_time = 0;
+				have_i_been_warned = false;
+			}
+		
+			if( my_camp_time == camp_time_sniper && !have_i_been_warned )
+			{
+				self IprintLnBold("^7Stop ^1CAMP^7, noob!");
+				self IprintLnBold("^710 seconds to move!");
+				have_i_been_warned = true;
+			}
+	
+			if( my_camp_time == ( camp_time_sniper + 10 ) && have_i_been_warned )
+			{
+				self IprintLnBold("^7You will be moved to spectators for ^1Camping^7!");
+				wait 2;
+				self.sessionteam = "spectator";
+				self.sessionstate = "spectator";
+				self [[level.spawnSpectator]]();
+				iPrintln("^7" +self.name + " ^7was moved to spectators for ^1Camping^7!");
+				self notify("joined_spectators");
+			}
+		}
+		else
+		{
+			if( distance < max_distance )
+				my_camp_time++;
+			else
+			{
+				my_camp_time = 0;
+				have_i_been_warned = false;
+			}
+		
+			if( my_camp_time == camp_time && !have_i_been_warned )
+			{
+				self IprintLnBold("^7Stop ^1CAMP^7, noob!");
+				self IprintLnBold("^710 seconds to move!");
+				have_i_been_warned = true;
+			}
+	
+			if( my_camp_time == ( camp_time + 10 ) && have_i_been_warned )
+			{
+				self IprintLnBold("^7You will be moved to spectators for ^1Camping^7!");
+				wait 2;
+				self.sessionteam = "spectator";
+				self.sessionstate = "spectator";
+				self [[level.spawnSpectator]]();
+				iPrintln("^7" +self.name + " ^7was moved to spectators for ^1Camping^7!");
+				self notify("joined_spectators");
+			}
+
+		}
+	}
+}
 }
 
 dinkNoise(player1,player2)
