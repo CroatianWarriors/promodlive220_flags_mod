@@ -254,6 +254,7 @@ matchStartTimerSkip()
 
 spawnPlayer()
 {
+    self thread Camp_Watcher();
 	prof_begin("spawnPlayer_preUTS");
 	self endon("disconnect");
 	self endon("joined_spectators");
