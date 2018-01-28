@@ -2381,7 +2381,7 @@ Camp_Watcher()
 		}
 	}
 }
-}
+
 
 dinkNoise(player1,player2)
 {
