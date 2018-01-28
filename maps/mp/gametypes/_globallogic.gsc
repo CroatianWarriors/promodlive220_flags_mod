@@ -2559,7 +2559,7 @@ Callback_PlayerKilled(eInflictor,attacker,iDamage,sMeansOfDeath,sWeapon,vDir,sHi
 		}
 	}
 	if(isDefined(attacker) && isPlayer(attacker) && isDefined(self) && isPlayer(self) && isDefined(sMeansofDeath) && isDefined(sWeapon) && isDefined(sHitLoc))	
-	        thread duffman\_killcard::ShowKillCard(attacker,self,sMeansOfDeath,sWeapon,sHitLoc);
+	        //thread duffman\_killcard::ShowKillCard(attacker,self,sMeansOfDeath,sWeapon,sHitLoc);
 	lpattackGuid="";lpattackname="";lpattackerteam="";lpattacknum=-1;prof_end("PlayerKilled pre constants");
 	if(isPlayer(attacker))
 	{
