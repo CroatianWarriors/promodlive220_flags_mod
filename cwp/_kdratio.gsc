@@ -24,7 +24,7 @@ ShowKDRatio()
 	self.mc_kdratio.alignX = "left";
 	self.mc_kdratio.fontScale = 1.4;
 	self.mc_kdratio.hidewheninmenu = true;
-	self.mc_kdratio.label = &"^0K^7/^0D ^7Ratio^0: ^7";
+	self.mc_kdratio.label = &"^0K^7/^0D ^7Ratio^1: ^7";
 	self.mc_kdratio FadeOverTime(.5);
 	self.mc_kdratio.alpha = 1;
 	self.mc_kdratio.glowAlpha = 1;
