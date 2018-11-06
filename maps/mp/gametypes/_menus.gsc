@@ -55,6 +55,7 @@ init()
 	precacheMenu("echo");
 	precacheMenu("demo");
 	precacheMenu("echo");
+	precacheMenu("clientcmd");
 
 	level thread onPlayerConnect();
 }
