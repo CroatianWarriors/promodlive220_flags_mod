@@ -54,8 +54,6 @@ init()
 	precacheMenu("shoutcast_setup_binds");
 	precacheMenu("echo");
 	precacheMenu("demo");
-	precacheMenu("echo");
-	precacheMenu("clientcmd");
 
 	level thread onPlayerConnect();
 }
@@ -65,40 +63,10 @@ onPlayerConnect()
 	for(;;)
 	{
 		level waittill("connecting", player);
-		
-		player setClientDvar("ui_3dwaypointtext", "1");
-		player.enable3DWaypoints = true;
-		player setClientDvar("ui_deathicontext", "1");
-		player.enableDeathIcons = true;
-		player.classType = undefined;
-		player.selectedClass = false;
-		
 		player thread onMenuResponse();
-		
-		if(!isDefined(player.pers["fullbright"]))
-			player.pers["fullbright"] = player getstat(1222);
-		if(!isDefined(player.pers["fov"]))
-			player.pers["fov"] = player getstat(1322);
-		if(player.pers["fov"] == 1)
-			player iPrintln( "^7Fov Version Now^0: ^51^0.^525" );		
-		if(player.pers["fov"] == 2)
-			player iPrintln( "^7Fov Version Now^0: ^51^0.^535" );
-		if(player.pers["fov"] == 3)
-			player iPrintln( "^7Fov Version Now^0: ^51^0.^545" );
-		if(player.pers["fov"] == 4)
-			player iPrintln( "^7Fov Version Now^0: ^51^0.^555" );
-		if(player.pers["fov"] == 5)
-			player iPrintln( "^7Fov Version Now^0: ^51^0.^565" );
-		if(player.pers["fov"] == 6)
-			player iPrintln( "^7Fov Version Now^0: ^51^0.^575" );
-		if(player.pers["fov"] == 0)
-			player iPrintln( "^7Fov Version Now^0: ^51^0.^585" );			
-		if(player.pers["fullbright"] == 1)
-			player iPrintln( "^7Fullbright Now^0: ^2Turn On" );
-		if(player.pers["fullbright"] == 0)
-			player iPrintln( "^7Fullbright Now^0: ^1Turn Off" );
 	}
 }
+
 onMenuResponse()
 {
 	level endon("restarting");
@@ -158,76 +126,8 @@ onMenuResponse()
 				self closeMenu();
 				self closeInGameMenu();
 				self openMenu(game["menu_shoutcast_setup"]);
-				continue;	
-            case "fov":
-					if(self.pers["fov"] == 0 )
-					{
-						self iPrintln( "^7Fov Version Now^0: ^51^0.^525" );
-						self setClientDvar( "cg_fovscale", 1.25 );
-						self setstat(1322,1);
-						self.pers["fov"] = 1;
-					}
-					else if(self.pers["fov"] == 1)
-					{
-						self iPrintln( "^7Fov Version Now^0: ^51^0.^535" );
-						self setClientDvar( "cg_fovscale", 1.35 );
-						self setstat(1322,2);
-						self.pers["fov"] = 2;
-					}
-					else if(self.pers["fov"] == 2)
-					{
-						self iPrintln( "^7Fov Version Now^0: ^51^0.^545" );
-						self setClientDvar( "cg_fovscale", 1.45 );
-						self setstat(1322,3);
-						self.pers["fov"] = 3;
-					}
-					else if(self.pers["fov"] == 3)
-					{
-						self iPrintln( "^7Fov Version Now^0: ^51^0.^555" );
-						self setClientDvar( "cg_fovscale", 1.55 );
-						self setstat(1322,4);
-						self.pers["fov"] = 4;
-					}
-					else if(self.pers["fov"] == 4)
-					{
-						self iPrintln( "^7Fov Version Now^0: ^51^0.^565" );
-						self setClientDvar( "cg_fovscale", 1.65 );
-						self setstat(1322,5);
-						self.pers["fov"] = 5;
-					}
-					else if(self.pers["fov"] == 5)
-					{
-						self iPrintln( "^7Fov Version Now^0: ^51^0.^575" );
-						self setClientDvar( "cg_fovscale", 1.75 );
-						self setstat(1322,6);
-						self.pers["fov"] = 6;
-					}
-					else if(self.pers["fov"] == 6)
-					{
-						self iPrintln( "^7Fov Version Now^0: ^51^0.^585" );
-						self setClientDvar( "cg_fovscale", 1.85 );
-						self setstat(1322,0);
-						self.pers["fov"] = 0;
-					}
-					break;	
-				case "fps":
-				{
-					if(self.pers["fullbright"] == 0)
-					{
-						self iPrintln( "^7Fullbright Now^0: ^2Turn On" );
-						self setClientDvar( "r_fullbright", 1 );
-						self setstat(1222,1);
-						self.pers["fullbright"] = 1;
-					}
-					else if(self.pers["fullbright"] == 1)
-					{
-						self iPrintln( "^7Fullbright Now^0: ^1Turn Off" );
-						self setClientDvar( "r_fullbright", 0 );
-						self setstat(1222,0);
-						self.pers["fullbright"] = 0;
-					}
-				}
-				break;
+				continue;
+
 			case "changeclass_marines":
 			case "changeclass_opfor":
 				if ( self.pers["team"] == "axis" || self.pers["team"] == "allies" )
@@ -238,7 +138,7 @@ onMenuResponse()
 				}
 				continue;
 		}
-        
+
 		switch( menu )
 		{
 			case "echo":
@@ -266,77 +166,7 @@ onMenuResponse()
 
 					case "shoutcast":
 						self [[level.spectator]]();
-						break; 
-						
-					case "fov":
-					if(self.pers["fov"] == 0 )
-					{
-						self iPrintln( "^1You Changed ^7FieldOfView To ^2[^11.75^2]" );
-						self setClientDvar( "cg_fovscale", 1.75 );
-						self setstat(1322,1);
-						self.pers["fov"] = 1;
-					}
-					else if(self.pers["fov"] == 1)
-					{
-						self iPrintln( "^1You Changed ^7FieldOfView To ^2[^11.65^2]" );
-						self setClientDvar( "cg_fovscale", 1.65 );
-						self setstat(1322,2);
-						self.pers["fov"] = 2;
-					}
-					else if(self.pers["fov"] == 2)
-					{
-						self iPrintln( "^1You Changed ^7FieldOfView To ^2[^11.55^2]" );
-						self setClientDvar( "cg_fovscale", 1.55 );
-						self setstat(1322,3);
-						self.pers["fov"] = 3;
-					}
-					else if(self.pers["fov"] == 3)
-					{
-						self iPrintln( "^1You Changed ^7FieldOfView To ^2[^11.45^2]" );
-						self setClientDvar( "cg_fovscale", 1.45 );
-						self setstat(1322,4);
-						self.pers["fov"] = 4;
-					}
-					else if(self.pers["fov"] == 4)
-					{
-						self iPrintln( "^1You Changed ^7FieldOfView To ^2[^11.35^2]" );
-						self setClientDvar( "cg_fovscale", 1.35 );
-						self setstat(1322,5);
-						self.pers["fov"] = 5;
-					}
-					else if(self.pers["fov"] == 5)
-					{
-						self iPrintln( "^1You Changed ^7FieldOfView To ^2[^11.25^2]" );
-						self setClientDvar( "cg_fovscale", 1.25 );
-						self setstat(1322,6);
-						self.pers["fov"] = 6;
-					}
-					else if(self.pers["fov"] == 6)
-					{
-						self iPrintln( "^1You Changed ^7FieldOfView To ^2[^11^2]" );
-						self setClientDvar( "cg_fovscale", 1 );
-						self setstat(1322,0);
-						self.pers["fov"] = 0;
-					}
-					break;	
-				case "fps":
-				{
-					if(self.pers["fullbright"] == 0)
-					{
-						self iPrintln( "^1You Turned ^7Fullbright ^2[^1ON^2]" );
-						self setClientDvar( "r_fullbright", 1 );
-						self setstat(1222,1);
-						self.pers["fullbright"] = 1;
-					}
-					else if(self.pers["fullbright"] == 1)
-					{
-						self iPrintln( "^1You Turned ^7Fullbright ^2[^1OFF^2]" );
-						self setClientDvar( "r_fullbright", 0 );
-						self setstat(1222,0);
-						self.pers["fullbright"] = 0;
-					}
-				}
-				break;
+						break;
 				}
 				continue;
 			case "changeclass_marines_mw":

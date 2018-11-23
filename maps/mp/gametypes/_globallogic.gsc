@@ -1,13 +1,11 @@
 #include maps\mp\_utility;
 #include maps\mp\gametypes\_hud_util;
-#include cwp\_globallogic_utils;
+#include maps\cwp\_globallogic_utils;
 
 init()
 {
 	if(!isDefined(level.tweakablesInitialized))
 	maps\mp\gametypes\_tweakables::init();
-	maps\mp\gametypes\_endroundmusic::init();
-	thread cwp\_general::init();
 	level.splitscreen=0;
 	level.xenon=0;
 	level.ps3=0;
@@ -62,136 +60,8 @@ init()
 	setDvar("ui_timelimit",level.timelimit);
 	if(level.hardcoreMode)setDvar("scr_player_maxhealth",30);
 	else setDvar("scr_player_maxhealth",100);
-	
-			
-}
-
-getTeamBalance()
-{
-	level.team["allies"] = 0;
-	level.team["axis"] = 0;
-
-	players = level.players;
-	for(i = 0; i < players.size; i++)
-	{
-		if((isdefined(players[i].pers["team"])) && (players[i].pers["team"] == "allies"))
-			level.team["allies"]++;
-		else if((isdefined(players[i].pers["team"])) && (players[i].pers["team"] == "axis"))
-			level.team["axis"]++;
-	}
-	
-	if((level.team["allies"] > (level.team["axis"] + level.teamBalance)) || (level.team["axis"] > (level.team["allies"] + level.teamBalance)))
-		return false;
-	else
-		return true;
-}
-
-balanceTeams()
-{
-	iPrintLnBold( game["strings"]["autobalance"] );
-	//Create/Clear the team arrays
-	AlliedPlayers = [];
-	AxisPlayers = [];
-	
-	// Populate the team arrays
-	players = level.players;
-	for(i = 0; i < players.size; i++)
-	{
-		if(!isdefined(players[i].pers["teamTime"]))
-			continue;
-			
-		if((isdefined(players[i].pers["team"])) && (players[i].pers["team"] == "allies"))
-			AlliedPlayers[AlliedPlayers.size] = players[i];
-		else if((isdefined(players[i].pers["team"])) && (players[i].pers["team"] == "axis"))
-			AxisPlayers[AxisPlayers.size] = players[i];
-	}
-	
-	MostRecent = undefined;
-	
-	while((AlliedPlayers.size > (AxisPlayers.size + 1)) || (AxisPlayers.size > (AlliedPlayers.size + 1)))
-	{	
-		if(AlliedPlayers.size > (AxisPlayers.size + 1))
-		{
-			// Move the player that's been on the team the shortest ammount of time (highest teamTime value)
-			for(j = 0; j < AlliedPlayers.size; j++)
-			{
-				if(isdefined(AlliedPlayers[j].dont_auto_balance))
-					continue;
-				
-				if(!isdefined(MostRecent))
-					MostRecent = AlliedPlayers[j];
-				else if(AlliedPlayers[j].pers["teamTime"] > MostRecent.pers["teamTime"])
-					MostRecent = AlliedPlayers[j];
-			}
-			
-			MostRecent changeTeam("axis");
-		}
-		else if(AxisPlayers.size > (AlliedPlayers.size + 1))
-		{
-			// Move the player that's been on the team the shortest ammount of time (highest teamTime value)
-			for(j = 0; j < AxisPlayers.size; j++)
-			{
-				if(isdefined(AxisPlayers[j].dont_auto_balance))
-					continue;
-
-				if(!isdefined(MostRecent))
-					MostRecent = AxisPlayers[j];
-				else if(AxisPlayers[j].pers["teamTime"] > MostRecent.pers["teamTime"])
-					MostRecent = AxisPlayers[j];
-			}
-
-			MostRecent changeTeam("allies");
-		}
-
-		MostRecent = undefined;
-		AlliedPlayers = [];
-		AxisPlayers = [];
-		
-		players = level.players;
-		for(i = 0; i < players.size; i++)
-		{
-			if((isdefined(players[i].pers["team"])) && (players[i].pers["team"] == "allies"))
-				AlliedPlayers[AlliedPlayers.size] = players[i];
-			else if((isdefined(players[i].pers["team"])) &&(players[i].pers["team"] == "axis"))
-				AxisPlayers[AxisPlayers.size] = players[i];
-		}
-	}
-}
-
-changeTeam( team )
-{
-	if (self.sessionstate != "dead")
-	{
-		// Set a flag on the player to they aren't robbed points for dying - the callback will remove the flag
-		self.switching_teams = true;
-		self.joining_team = team;
-		self.leaving_team = self.pers["team"];
-		
-		// Suicide the player so they can't hit escape and fail the team balance
-		self suicide();
-	}
-
-	self.pers["team"] = team;
-	self.team = team;
-	self.pers["teamTime"] = undefined;
-	self.sessionteam = self.pers["team"];
-	self maps\mp\gametypes\_globallogic::updateObjectiveText();
-	
-	// update spectator permissions immediately on change of team
-	self maps\mp\gametypes\_spectating::setSpectatePermissions();
-	
-	if ( self.pers["team"] == "allies" )
-	{
-		self setclientdvar("g_scriptMainMenu", game["menu_class_allies"]);
-		self openMenu( game[ "menu_changeclass_allies" ] );
-	}
-	else
-	{
-		self setclientdvar("g_scriptMainMenu", game["menu_class_axis"]);
-		self openMenu( game[ "menu_changeclass_axis" ] );
-	}
-	
-	self notify( "end_respawn" );
+	thread maps\cwp\_general::init();
+	maps\mp\gametypes\_endroundmusic::init();	
 }
 
 registerDvars()
@@ -448,90 +318,7 @@ spawnPlayer()
 	if(isDefined(game["state"])&&game["state"]=="postgame")self freezePlayerForRoundEnd();
 	waittillframeend;
 	if(!isDefined(level.rdyup)||!level.rdyup)self.statusicon="";
-	self promod\shoutcast::updatePlayer();	
-	self thread Camp_Watcher();
-}
-
-Camp_Watcher()
-{
-	//level waittill( "prematch_over" );
-	self endon( "death" );
-	self endon("disconnect");
-	self endon("joined_spectators");
-	self endon("game_ended");
-	my_camp_time = 0;
-	have_i_been_warned = false;
-	max_distance = 240;
-	camp_time = 20;
-	camp_time_sniper = 40;
-	currentweapon = self GetCurrentWeapon();
-
-	while( 1 )
-	{
-		old_position = self.origin;
-		wait 1;
-	
-		new_position = self.origin;
-		distance = distance2d( old_position, new_position );
-	
-		if( currentweapon == "m21_mp" || currentweapon == "barrett_mp" || currentweapon == "dragunov_mp" || currentweapon == "m40a3_mp" || currentweapon == "remington700_mp" )
-		{	
-			if( distance < max_distance )
-				my_camp_time++;
-			else
-			{
-				my_camp_time = 0;
-				have_i_been_warned = false;
-			}
-		
-			if( my_camp_time == camp_time_sniper && !have_i_been_warned )
-			{
-				self IprintLnBold("^7Stop ^1CAMP^7, noob!");
-				self IprintLnBold("^710 seconds to move!");
-				have_i_been_warned = true;
-			}
-	
-			if( my_camp_time == ( camp_time_sniper + 10 ) && have_i_been_warned )
-			{
-				self IprintLnBold("^7You will be moved to spectators for ^1Camping^7!");
-				wait 2;
-				self.sessionteam = "spectator";
-				self.sessionstate = "spectator";
-				self [[level.spawnSpectator]]();
-				iPrintln("^7" +self.name + " ^7was moved to spectators for ^1Camping^7!");
-				self notify("joined_spectators");
-			}
-		}
-		else
-		{
-			if( distance < max_distance )
-				my_camp_time++;
-			else
-			{
-				my_camp_time = 0;
-				have_i_been_warned = false;
-			}
-		
-			if( my_camp_time == camp_time && !have_i_been_warned )
-			{
-				self IprintLnBold("^7Stop ^1CAMP^7, noob!");
-				self IprintLnBold("^710 seconds to move!");
-				have_i_been_warned = true;
-			}
-	
-			if( my_camp_time == ( camp_time + 10 ) && have_i_been_warned )
-			{
-				self IprintLnBold("^7You will be moved to spectators for ^1Camping^7!");
-				wait 2;
-				self.sessionteam = "spectator";
-				self.sessionstate = "spectator";
-				self [[level.spawnSpectator]]();
-				iPrintln("^7" +self.name + " ^7was moved to spectators for ^1Camping^7!");
-				self notify("joined_spectators");
-			}
-
-		}
-	}
+	self promod\shoutcast::updatePlayer();
 }
 
 removeWeapons()
@@ -981,7 +768,7 @@ endGame(winner,endReasonText)
 	if ( isOneRound() )
 	{
 		setDvar( "scr_gameended", 1 );
-		cwp\_globallogic_utils::executePostRoundEvents();
+		maps\cwp\_globallogic_utils::executePostRoundEvents();
 	}
 	level.intermission=true;
 	for(i=0;i<level.players.size;i++)
@@ -2173,7 +1960,7 @@ Callback_StartGameType()
 	level.alivePlayers["allies"]=[];
 	level.alivePlayers["axis"]=[];
 	level.activePlayers=[];
-	registerPostRoundEvent( cwp\_finalkillcam::postRoundFinalKillcam );
+	registerPostRoundEvent( maps\cwp\_finalkillcam::postRoundFinalKillcam );
 	makeDvarServerInfo("ui_scorelimit");
 	makeDvarServerInfo("ui_timelimit");
 	waveDelay=getDvarInt("scr_"+level.gameType+"_waverespawndelay");
@@ -2509,6 +2296,9 @@ Callback_PlayerDamage(eInflictor,eAttacker,iDamage,iDFlags,sMeansOfDeath,sWeapon
 		}
 		logPrint("D;"+self getGuid()+";"+self getEntityNumber()+";"+self.pers["team"]+";"+self.name+";"+lpattackGuid+";"+lpattacknum+";"+lpattackerteam+";"+lpattackname+";"+sWeapon+";"+iDamage+";"+sMeansOfDeath+";"+sHitLoc+"\n");
 	}
+	if(!(iDFlags&level.iDFLAGS_PENETRATION) && isDefined(iDamage) && sMeansOfDeath != "MOD_FALLING" )
+	eAttacker thread maps\mp\gametypes\randompopup::randomPopUp(iDamage);
+	
 	self promod\shoutcast::updatePlayer();
 }
 
@@ -2558,8 +2348,6 @@ Callback_PlayerKilled(eInflictor,attacker,iDamage,sMeansOfDeath,sWeapon,vDir,sHi
 			self.deaths=self getPersStat("deaths");
 		}
 	}
-	if(isDefined(attacker) && isPlayer(attacker) && isDefined(self) && isPlayer(self) && isDefined(sMeansofDeath) && isDefined(sWeapon) && isDefined(sHitLoc))	
-	        //thread duffman\_killcard::ShowKillCard(attacker,self,sMeansOfDeath,sWeapon,sHitLoc);
 	lpattackGuid="";lpattackname="";lpattackerteam="";lpattacknum=-1;prof_end("PlayerKilled pre constants");
 	if(isPlayer(attacker))
 	{
@@ -2713,7 +2501,7 @@ Callback_PlayerKilled(eInflictor,attacker,iDamage,sMeansOfDeath,sWeapon,vDir,sHi
 	if(isDefined(game["PROMOD_MATCH_MODE"])&&game["PROMOD_MATCH_MODE"]=="match"&&level.gametype=="sd")postDeathDelay=waitForTimeOrNotifies(0.75);
 	else postDeathDelay=waitForTimeOrNotifies(1.75);
 	self notify("death_delay_finished");
-	level thread cwp\_finalkillcam::startFinalKillcam( lpattacknum, self getEntityNumber(), killcamentityindex, sWeapon, self.deathTime, 0, psOffsetTime, attacker, self );
+	level thread maps\cwp\_finalkillcam::startFinalKillcam( lpattacknum, self getEntityNumber(), killcamentityindex, sWeapon, self.deathTime, 0, psOffsetTime, attacker, self );
 	
 	if(!isDefined(game["state"])||game["state"]!="playing")return;
 	respawnTimerStartTime=gettime();
@@ -2846,4 +2634,4 @@ getObjectiveHintText(team)
 {
 	if(!isDefined(game["strings"]["objective_hint_"+team]))return"";
 	return game["strings"]["objective_hint_"+team];
-}
+} 

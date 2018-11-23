@@ -1,20 +1,19 @@
 # About Call of Duty 4 Source
-Source create on 16.1.2018
+Source created on 16.1.2018
 
 # About Developer's 
 + Developer's: CWP-Razor, jEENN, Night
 + Custom Menu & Material's: ZaGGoreC, Night
 
-# What is new?
- + Custom Menu
+# Update Notes
  + 252 Country Flags
- + Field of View and Fullbright /bind key 8 and 9
- + New FinalKillcam with music - Only for Search & Destroy Gametype
- + New In-Game Font
+ + MapVote System
+ + Randompopup
+ + FinallKillcam + Music + MusicName
  + GeoIP Location
  + KD Ratio
- + Anti camp script
+ + AntiAFK
+ + New Music
+ + New Background
  
- 
- 
- 
+# Our forum: www.cwpclan.com

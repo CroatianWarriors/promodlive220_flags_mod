@@ -466,12 +466,6 @@ intoSpawn(originA, anglesA)
 	if (roundspl==0)
 	{
 		self playLocalSound("welcome");
-		if(self cwp_common\_common::getCvarInt("fullbright"))
-			self iPrintln("You Still Have ^3Fullbright^7 Enabled");
-		if(self cwp_common\_common::getCvarInt("fov") == 1)
-			self iPrintln("You Still Have ^3Fov^7 Enabled At ^11.25^7");
-		if(self cwp_common\_common::getCvarInt("fov") == 2)
-			self iPrintln("You Still Have ^3Fov^7 Enabled At ^11.125^7");
 	}
 }
 
