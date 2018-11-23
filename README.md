@@ -1,8 +1,8 @@
 # About Call of Duty 4 Source
-Source created on 16.1.2018
+# Source created on 16.1.2018
 
 
-#Developer List:
+# Developer List:
 
 JeeNNN:]
 
@@ -14,7 +14,7 @@ ZaGGoreC
 
  
 
-Update Notes:
+# Update Notes:
 
 + MapVote System
 + Randompopup
@@ -23,8 +23,8 @@ Update Notes:
 + New Background + Music
 + New makeMod.bat
 + Health script
-- Custom Menu
-- AntiCamp
-- Font﻿﻿
+- -Custom Menu
+- -AntiCamp
+- -Font﻿﻿
  
 # Our forum: www.cwpclan.com
